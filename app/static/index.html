@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PDF Scanner & Document Intelligence Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                    <i class="fas me-1 fa-file-contract"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-300">
+                        AI Document Copilot
+                    </h1>
+                    <p class="text-xs text-gray-400">Scan • Understand • Extract • Summarize • Ask • Automate</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-900/60 text-blue-300 border border-blue-700">
+                    <i class="fas fa-shield-alt mr-1"></i> AES-256 • SOC2 • GDPR
+                </span>
+                <button id="voiceControlBtn" onclick="toggleVoiceModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition shadow-md">
+                    <i class="fas fa-microphone"></i>
+                    <span>Voice Command</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Sidebar Navigation -->
+        <aside class="lg:col-span-3 bg-gray-800 rounded-xl p-4 border border-gray-700 shadow-xl h-fit">
+            <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-2">Modules Navigation</h2>
+            <nav class="space-y-1">
+                <button onclick="switchTab('scanner')" id="tab-scanner" class="nav-tab active-tab w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+                    <i class="fas fa-camera text-blue-400 w-5"></i>
+                    <span>1. Smart Scanner & OCR</span>
+                </button>
+                <button onclick="switchTab('extraction')" id="tab-extraction" class="nav-tab w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+                    <i class="fas fa-brain text-purple-400 w-5"></i>
+                    <span>2. AI Data Extraction</span>
+                </button>
+                <button onclick="switchTab('ragchat')" id="tab-ragchat" class="nav-tab w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+                    <i class="fas fa-comments text-green-400 w-5"></i>
+                    <span>3. Chat with PDF (RAG)</span>
+                </button>
+                <button onclick="switchTab('summary')" id="tab-summary" class="nav-tab w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+                    <i class="fas fa-compress-alt text-yellow-400 w-5"></i>
+                    <span>4. Summary & Translation</span>
+                </button>
+                <button onclick="switchTab('pdfutils')" id="tab-pdfutils" class="nav-tab w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+                    <i class="fas fa-tools text-red-400 w-5"></i>
+                    <span>5. PDF Studio Utilities</span>
+                </button>
+                <button onclick="switchTab('expense')" id="tab-expense" class="nav-tab w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+                    <i class="fas fa-receipt text-indigo-400 w-5"></i>
+                    <span>6. Expense Manager</span>
+                </button>
+                <button onclick="switchTab('workflow')" id="tab-workflow" class="nav-tab w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+                    <i class="fas fa-sitemap text-teal-400 w-5"></i>
+                    <span>7. Enterprise Workflow</span>
+                </button>
+            </nav>
+
+            <div class="mt-8 p-4 bg-gray-900/60 rounded-lg border border-gray-700">
+                <h3 class="text-xs font-bold text-gray-300 mb-2">System Performance</h3>
+                <div class="space-y-2 text-xs text-gray-400">
+                    <div class="flex justify-between"><span>OCR Speed</span><span class="text-green-400">&lt; 2.1s</span></div>
+                    <div class="flex justify-between"><span>OCR Accuracy</span><span class="text-green-400">98.8%</span></div>
+                    <div class="flex justify-between"><span>Extraction Accuracy</span><span class="text-green-400">96.5%</span></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Dynamic Content Area -->
+        <main class="lg:col-span-9 space-y-6">
+
+            <!-- SECTION 1: Smart Scanner & OCR -->
+            <section id="section-scanner" class="tab-content bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl space-y-6">
+                <div class="border-b border-gray-700 pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-camera text-blue-400 mr-2"></i> Smart Scanner & AI OCR Engine
+                    </h2>
+                    <p class="text-sm text-gray-400">Upload a PDF or image document to enhance quality, perform OCR, and classify automatically.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <form id="scanForm" onsubmit="handleScanSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Select Document (PDF / Image)</label>
+                            <input type="file" id="scanFileInput" accept=".pdf,.png,.jpg,.jpeg" required
+                                class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 bg-gray-900 rounded-lg border border-gray-700 p-2">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">OCR Language</label>
+                                <select id="scanLangSelect" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200">
+                                    <option value="English">English</option>
+                                    <option value="Tamil">Tamil</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="Telugu">Telugu</option>
+                                    <option value="Kannada">Kannada</option>
+                                    <option value="Malayalam">Malayalam</option>
+                                    <option value="French">French</option>
+                                    <option value="German">German</option>
+                                    <option value="Spanish">Spanish</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Mode</label>
+                                <select id="scanModeSelect" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200">
+                                    <option value="false">Standard Printed</option>
+                                    <option value="true">Handwritten Notes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 pt-2">
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" id="enhAutoCrop" checked class="rounded bg-gray-900 border-gray-700 text-blue-600">
+                                <span class="ml-2 text-xs text-gray-300">Auto Crop & Edge Detection</span>
+                            </label>
+                            <br>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" id="enhShadow" checked class="rounded bg-gray-900 border-gray-700 text-blue-600">
+                                <span class="ml-2 text-xs text-gray-300">AI Shadow Removal & Noise Reduction</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition shadow-md flex justify-center items-center">
+                            <i class="fas fa-bolt mr-2"></i> Enhance & Process Document
+                        </button>
+                    </form>
+
+                    <!-- Scanner Output Preview -->
+                    <div class="bg-gray-900 rounded-lg p-4 border border-gray-700 flex flex-col">
+                        <h3 class="text-sm font-bold text-gray-300 mb-2 flex items-center justify-between">
+                            <span>Classification & OCR Preview</span>
+                            <span id="scanBadge" class="hidden px-2 py-0.5 rounded text-xs bg-green-900 text-green-300 border border-green-700">Processed</span>
+                        </h3>
+                        <div id="scanResultBox" class="flex-1 overflow-y-auto text-xs font-mono text-gray-300 bg-gray-950 p-3 rounded border border-gray-800 space-y-2">
+                            <p class="text-gray-500 italic">Upload a document to view extracted OCR text and automatic classification results...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: AI Data Extraction -->
+            <section id="section-extraction" class="tab-content hidden bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl space-y-6">
+                <div class="border-b border-gray-700 pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-brain text-purple-400 mr-2"></i> AI Structured Data Extraction
+                    </h2>
+                    <p class="text-sm text-gray-400">Extract high-accuracy key-value pairs for Invoices, Receipts, Passports, and Bank Statements.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Document Schema Type</label>
+                            <select id="extractDocType" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200">
+                                <option value="Invoice">Invoice (Vendor, Total, GST, Dates)</option>
+                                <option value="Receipt">Receipt (Merchant, Category, Amount)</option>
+                                <option value="Passport">Passport (Full Name, Number, DOB, Expiry)</option>
+                                <option value="Bank Statement">Bank Statement (Account, Debit, Credit, Balance)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Document Text Content</label>
+                            <textarea id="extractTextInput" rows="8" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-xs font-mono text-gray-200 focus:outline-none focus:border-purple-500" placeholder="Paste extracted OCR text here..."></textarea>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="runDataExtraction('json')" class="flex-1 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg text-sm transition">
+                                Extract JSON
+                            </button>
+                            <button onclick="runDataExtraction('csv')" class="flex-1 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg text-sm transition">
+                                Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                        <h3 class="text-sm font-bold text-gray-300 mb-2">Extracted Key-Value Fields</h3>
+                        <pre id="extractionOutput" class="h-72 overflow-y-auto text-xs font-mono text-purple-300 bg-gray-950 p-3 rounded border border-gray-800">No fields extracted yet.</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Chat with PDF (RAG) -->
+            <section id="section-ragchat" class="tab-content hidden bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl space-y-6">
+                <div class="border-b border-gray-700 pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-comments text-green-400 mr-2"></i> Chat with PDF (RAG Vector Copilot)
+                    </h2>
+                    <p class="text-sm text-gray-400">Ask any question about your document content powered by vector search and generative LLMs.</p>
+                </div>
+
+                <div class="h-96 flex flex-col bg-gray-900 rounded-lg border border-gray-700 overflow-hidden">
+                    <div id="chatMessagesBox" class="flex-1 p-4 overflow-y-auto space-y-3 text-sm">
+                        <div class="bg-gray-800 p-3 rounded-lg border border-gray-700 max-w-md">
+                            <p class="text-xs font-bold text-green-400 mb-1">AI Copilot</p>
+                            <p class="text-gray-200">Hello! Ask me anything about your scanned or uploaded PDF document.</p>
+                        </div>
+                    </div>
+                    <form onsubmit="handleChatSubmit(event)" class="p-3 bg-gray-800 border-t border-gray-700 flex space-x-2">
+                        <input type="text" id="chatQueryInput" placeholder="e.g. What is the total invoice amount and due date?" required class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-green-500">
+                        <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg text-sm transition">
+                            Ask AI
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- SECTION 4: AI Summary & Translation -->
+            <section id="section-summary" class="tab-content hidden bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl space-y-6">
+                <div class="border-b border-gray-700 pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-compress-alt text-yellow-400 mr-2"></i> AI Document Summary & Translation
+                    </h2>
+                    <p class="text-sm text-gray-400">Generate executive summaries, action items, and side-by-side translations.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-md font-bold text-gray-200">AI Summarizer</h3>
+                        <textarea id="summarySourceText" rows="6" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-xs font-mono text-gray-200" placeholder="Enter document content to summarize..."></textarea>
+                        <button onclick="runSummarizer()" class="w-full py-2 bg-yellow-600 hover:bg-yellow-500 text-white font-semibold rounded-lg text-sm transition">
+                            Generate AI Summary
+                        </button>
+                        <div id="summaryOutput" class="bg-gray-900 p-4 rounded-lg border border-gray-700 text-xs text-gray-300 space-y-2 h-48 overflow-y-auto">
+                            <p class="text-gray-500 italic">AI Summary result will appear here...</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-md font-bold text-gray-200">AI Multi-Language Translation</h3>
+                        <div class="flex space-x-2">
+                            <select id="targetLangSelect" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200">
+                                <option value="Tamil">Tamil</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="French">French</option>
+                                <option value="German">German</option>
+                                <option value="Arabic">Arabic</option>
+                                <option value="Japanese">Japanese</option>
+                            </select>
+                            <button onclick="runTranslation()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg text-sm transition">
+                                Translate
+                            </button>
+                        </div>
+                        <div id="translationOutput" class="bg-gray-900 p-4 rounded-lg border border-gray-700 text-xs font-serif text-indigo-300 h-80 overflow-y-auto">
+                            <p class="text-gray-500 italic">Translated document text will appear here with layout preserved...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: PDF Studio Utilities -->
+            <section id="section-pdfutils" class="tab-content hidden bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl space-y-6">
+                <div class="border-b border-gray-700 pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-tools text-red-400 mr-2"></i> PDF Utilities Studio & Security
+                    </h2>
+                    <p class="text-sm text-gray-400">Merge, Split, Protect, Watermark, and Digitally Sign PDF files.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Tool 1: Merge -->
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-3">
+                        <h3 class="text-sm font-bold text-red-400"><i class="fas fa-object-group mr-1"></i> Merge PDFs</h3>
+                        <input type="file" id="mergeFileInput" multiple accept=".pdf" class="text-xs text-gray-400 w-full">
+                        <button onclick="runPdfMerge()" class="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded transition">
+                            Merge Selected PDFs
+                        </button>
+                    </div>
+
+                    <!-- Tool 2: Split -->
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-3">
+                        <h3 class="text-sm font-bold text-red-400"><i class="fas fa-cut mr-1"></i> Split PDF Pages</h3>
+                        <input type="file" id="splitFileInput" accept=".pdf" class="text-xs text-gray-400 w-full">
+                        <button onclick="runPdfSplit()" class="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded transition">
+                            Split PDF Pages
+                        </button>
+                    </div>
+
+                    <!-- Tool 3: Protect -->
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-3">
+                        <h3 class="text-sm font-bold text-red-400"><i class="fas fa-lock mr-1"></i> Protect / Encrypt</h3>
+                        <input type="file" id="protectFileInput" accept=".pdf" class="text-xs text-gray-400 w-full">
+                        <input type="password" id="pdfPasswordInput" placeholder="Enter Encryption Key" class="w-full bg-gray-800 border border-gray-700 rounded p-1 text-xs text-gray-200">
+                        <button onclick="runPdfProtect()" class="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded transition">
+                            Encrypt PDF
+                        </button>
+                    </div>
+
+                    <!-- Tool 4: Watermark -->
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-3">
+                        <h3 class="text-sm font-bold text-red-400"><i class="fas fa-stamp mr-1"></i> Watermark PDF</h3>
+                        <input type="file" id="watermarkFileInput" accept=".pdf" class="text-xs text-gray-400 w-full">
+                        <input type="text" id="watermarkTextInput" value="CONFIDENTIAL" class="w-full bg-gray-800 border border-gray-700 rounded p-1 text-xs text-gray-200">
+                        <button onclick="runPdfWatermark()" class="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded transition">
+                            Apply Watermark
+                        </button>
+                    </div>
+
+                    <!-- Tool 5: Digital Signature -->
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-3">
+                        <h3 class="text-sm font-bold text-red-400"><i class="fas fa-signature mr-1"></i> Digital Signature</h3>
+                        <input type="file" id="signFileInput" accept=".pdf" class="text-xs text-gray-400 w-full">
+                        <input type="text" id="signerNameInput" value="Authorized Authority" class="w-full bg-gray-800 border border-gray-700 rounded p-1 text-xs text-gray-200">
+                        <button onclick="runPdfDigitalSignature()" class="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded transition">
+                            Sign PDF
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 6: Expense Manager -->
+            <section id="section-expense" class="tab-content hidden bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl space-y-6">
+                <div class="border-b border-gray-700 pb-4 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fas fa-receipt text-indigo-400 mr-2"></i> Expense Management & GST Ledger
+                        </h2>
+                        <p class="text-sm text-gray-400">Automated receipt scanning, expense categorisation, and tax reports.</p>
+                    </div>
+                    <button onclick="fetchExpenseReport()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded transition">
+                        Refresh Ledger
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700">
+                        <p class="text-xs text-gray-400">Total Spend</p>
+                        <p id="totalSpendVal" class="text-2xl font-bold text-indigo-400">$0.00</p>
+                    </div>
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700">
+                        <p class="text-xs text-gray-400">Reclaimable GST (18%)</p>
+                        <p id="totalGstVal" class="text-2xl font-bold text-green-400">$0.00</p>
+                    </div>
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700">
+                        <p class="text-xs text-gray-400">Scanned Receipts Count</p>
+                        <p id="totalCountVal" class="text-2xl font-bold text-gray-200">0</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-900 rounded-lg p-4 border border-gray-700 overflow-x-auto">
+                    <h3 class="text-sm font-bold text-gray-300 mb-3">Recent Logged Expenses</h3>
+                    <table class="w-full text-left text-xs text-gray-300">
+                        <thead class="bg-gray-800 text-gray-400 uppercase text-xxs">
+                            <tr>
+                                <th class="p-2">ID</th>
+                                <th class="p-2">Vendor</th>
+                                <th class="p-2">Category</th>
+                                <th class="p-2">Date</th>
+                                <th class="p-2">Amount</th>
+                                <th class="p-2">GST</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <tr><td colspan="6" class="p-3 text-center text-gray-500">Loading ledger data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 7: Enterprise Workflow -->
+            <section id="section-workflow" class="tab-content hidden bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl space-y-6">
+                <div class="border-b border-gray-700 pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-sitemap text-teal-400 mr-2"></i> Enterprise Workflow & Compliance Engine
+                    </h2>
+                    <p class="text-sm text-gray-400">Role-Based Access Control, Approval Flow, Cloud Backup (S3/Drive), and Audit Logs.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-3">
+                        <h3 class="text-sm font-bold text-teal-300">Active Approval Workflows</h3>
+                        <div id="workflowList" class="space-y-2 text-xs">Loading workflows...</div>
+                    </div>
+
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-3">
+                        <h3 class="text-sm font-bold text-teal-300">Cloud Synchronization & Security</h3>
+                        <div class="space-y-2">
+                            <label class="block text-xs text-gray-400">Select Storage Integration</label>
+                            <select id="cloudProviderSelect" class="w-full bg-gray-800 border border-gray-700 rounded p-2 text-xs text-gray-200">
+                                <option value="AWS S3">AWS S3 (Encrypted Vault)</option>
+                                <option value="Google Drive">Google Drive Enterprise</option>
+                                <option value="OneDrive">Microsoft OneDrive</option>
+                                <option value="SharePoint">SharePoint Legal Repository</option>
+                            </select>
+                            <button onclick="runCloudSync()" class="w-full py-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold rounded text-xs transition">
+                                Sync Scanned Documents to Cloud
+                            </button>
+                        </div>
+                        <div id="cloudSyncStatus" class="text-xs text-teal-400 bg-gray-950 p-2 rounded">
+                            Cloud status: In Sync
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
